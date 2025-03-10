@@ -13,47 +13,52 @@ struct ContentView: View {
     @Query private var items: [Item]
 
     var body: some View {
-        NavigationSplitView {
-            List {
-                ForEach(items) { item in
-                    NavigationLink {
-                        Text("Item at \(item.timestamp, format: Date.FormatStyle(date: .numeric, time: .standard))")
-                    } label: {
-                        Text(item.timestamp, format: Date.FormatStyle(date: .numeric, time: .standard))
-                    }
-                }
-                .onDelete(perform: deleteItems)
-            }
-            .toolbar {
-                ToolbarItem(placement: .navigationBarTrailing) {
-                    EditButton()
-                }
-                ToolbarItem {
-                    Button(action: addItem) {
-                        Label("Add Item", systemImage: "plus")
-                    }
-                }
-            }
-        } detail: {
-            Text("Select an item")
-        }
+        
+        Grid(horizontalSpacing: 2, verticalSpacing: 2) {
+            CardView(emoji: "🤠", isFaceUp: true)
+            CardView(emoji: "🤠", isFaceUp: false)
+            CardView(emoji: "🤠", isFaceUp: true)
+            CardView(emoji: "🤠", isFaceUp: false)
+        }.padding()
     }
 
-    private func addItem() {
-        withAnimation {
-            let newItem = Item(timestamp: Date())
-            modelContext.insert(newItem)
+
+    private func card(emoji: String) -> some View {
+        ZStack {
+            RoundedRectangle(cornerRadius: 12).foregroundColor(.white)
+            RoundedRectangle(cornerRadius: 12).strokeBorder(lineWidth: 2).foregroundStyle(.orange)
+            Text(emoji).font(.largeTitle).fontWeight(.bold)
         }
     }
+}
 
-    private func deleteItems(offsets: IndexSet) {
-        withAnimation {
-            for index in offsets {
-                modelContext.delete(items[index])
+
+struct CardView: View {
+    var emoji: String
+    var isFaceUp: Bool = false
+    
+    var body: some View {
+        ZStack {
+            if isFaceUp {
+                RoundedRectangle(cornerRadius: 12).foregroundColor(.white)
+                RoundedRectangle(cornerRadius: 12).strokeBorder(lineWidth: 2).foregroundStyle(.orange)
+                Text(emoji).font(.largeTitle).fontWeight(.bold)
+            } else {
+                RoundedRectangle(cornerRadius: 12).foregroundColor(.orange)
+                RoundedRectangle(cornerRadius: 12).strokeBorder(lineWidth: 2).foregroundStyle(.orange)
+
             }
         }
     }
 }
+
+
+
+
+
+
+
+
 
 #Preview {
     ContentView()
