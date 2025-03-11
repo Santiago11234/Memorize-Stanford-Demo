@@ -22,10 +22,13 @@ struct Memorize_Stanford_DemoApp: App {
             fatalError("Could not create ModelContainer: \(error)")
         }
     }()
-
+    
+    @StateObject var game = EmojiMemoryGame()
+    
+    
     var body: some Scene {
         WindowGroup {
-            ContentView()
+            EmojiMemoryGameView(viewModel: game)
         }
         .modelContainer(sharedModelContainer)
     }

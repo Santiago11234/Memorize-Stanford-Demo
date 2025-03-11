@@ -9,12 +9,17 @@ import SwiftUI
 import SwiftData
 
 struct EmojiMemoryGameView: View {
-    let emojis: [String] = ["✌","😂","😝","😁","😱","👉","🙌","🍻","🔥","🌈","☀","🎈","🌹","💄","🎀","⚽","🎾","🏁","🤠", "😈", "💩", "👻"]
-    @State var cardCount: Int = 18
+    @ObservedObject var viewModel: EmojiMemoryGame
+    
+    @State var cardCount: Int = 5
     var body: some View {
         VStack {
             ScrollView {
                 cards
+            }
+            Button("Shuffle") {
+                viewModel.shuffle();
+                print("shuffling", viewModel.cards[0])
             }
 //            Spacer()
 //            cardCountAdjusters
@@ -23,12 +28,13 @@ struct EmojiMemoryGameView: View {
     }
     
     var cards: some View {
-        LazyVGrid(columns: [GridItem(.adaptive(minimum: 85))]) {
-            ForEach(0..<cardCount, id: \.self) { index in
-                CardView(emoji: emojis[index])
+        LazyVGrid(columns: [GridItem(.adaptive(minimum: 85), spacing: 0)]) {
+            ForEach(viewModel.cards.indices, id: \.self) { index in
+                CardView(viewModel.cards[index])
                     .aspectRatio(2/3, contentMode: .fit)
+                    .padding(4)
             }
-        }.padding()
+        }
     }
     
     var cardCountAdjusters: some View {
@@ -46,34 +52,37 @@ struct EmojiMemoryGameView: View {
         }, label: {
             Image(systemName: "rectangle.stack.badge.\(symbol).fill")
         })
-        .disabled(cardCount + offset < 1 || cardCount + offset > emojis.count)
+        .disabled(cardCount + offset < 1 || cardCount + offset > viewModel.cards.count)
     }
     
 }
 
 
 struct CardView: View {
-    var emoji: String
-    @State var isFaceUp: Bool = true
+    let card: MemoryGame<String>.Card
+    
+    init(_ card: MemoryGame<String>.Card) {
+        self.card = card
+    }
     
     var body: some View {
         ZStack(alignment: .center) {
-            
             let base: RoundedRectangle = RoundedRectangle(cornerRadius: 12)
-
             Group {
                 base.fill(.white)
                 base.strokeBorder(lineWidth: 2).foregroundStyle(.orange)
-                Text(emoji).font(.largeTitle)
-            }.opacity(isFaceUp ? 1 : 0)
-            base.fill(.orange).opacity(isFaceUp ? 0 : 1)
+                Text(card.content).font(.system(size: 200))
+                    .minimumScaleFactor(0.01)
+                    .aspectRatio(1, contentMode: .fit)
+            }.opacity(card.isFaceUp ? 1 : 0)
+            base.fill(.orange).opacity(card.isFaceUp ? 0 : 1)
         }.onTapGesture {
-            isFaceUp.toggle()
-        }.padding(5)
+//            viewModel.choose(card)
+        }
     }
 }
 
 
 #Preview {
-    EmojiMemoryGameView()
+    EmojiMemoryGameView(viewModel: EmojiMemoryGame())
 }

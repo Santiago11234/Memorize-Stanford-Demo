@@ -9,15 +9,30 @@
 import Foundation
 
 struct MemoryGame<CardContent> {
-    var cards: Array<Card>
+    //only setting the card is private. Anyone can view it. Called "Access Control"
+    private(set) var cards: Array<Card>
     
-    func chooseCard(card: Card) {
+    init(numberOfPairsOfCards: Int, cardContentFactory: (Int) -> CardContent) {
+        cards = []
+        for pairIndex in 0..<max(2,numberOfPairsOfCards) {
+            let content = cardContentFactory(pairIndex)
+            cards.append(Card(content: content))
+            cards.append(Card(content: content))
+        }
+    }
+    
+    func choose(_ card: Card) {
         
     }
     
-    struct Card {
-        var content: CardContent
-        var isFaceUp: Bool
-        var isMatched: Bool
+    mutating func shuffle() {
+        cards.shuffle()
     }
+    struct Card {
+        let content: CardContent
+        var isFaceUp: Bool = true
+        var isMatched: Bool = false
+    }
+    
+
 }
