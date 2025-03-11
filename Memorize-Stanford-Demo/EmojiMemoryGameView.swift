@@ -1,5 +1,5 @@
 //
-//  ContentView.swift
+//  EmojiMemoryGameView.swift
 //  Memorize-Stanford-Demo
 //
 //  Created by Santiago Espinoza on 3/10/25.
@@ -8,37 +8,38 @@
 import SwiftUI
 import SwiftData
 
-struct ContentView: View {
+struct EmojiMemoryGameView: View {
     let emojis: [String] = ["✌","😂","😝","😁","😱","👉","🙌","🍻","🔥","🌈","☀","🎈","🌹","💄","🎀","⚽","🎾","🏁","🤠", "😈", "💩", "👻"]
-    @State var cardCount: Int = 4
-    
-    
+    @State var cardCount: Int = 18
     var body: some View {
         VStack {
-            cards
-            Spacer()
-            cardCountAdjusters
+            ScrollView {
+                cards
+            }
+//            Spacer()
+//            cardCountAdjusters
         }.padding()
 
     }
     
     var cards: some View {
-        LazyVGrid(columns: [GridItem(.adaptive(minimum: 120))]) {
+        LazyVGrid(columns: [GridItem(.adaptive(minimum: 85))]) {
             ForEach(0..<cardCount, id: \.self) { index in
                 CardView(emoji: emojis[index])
+                    .aspectRatio(2/3, contentMode: .fit)
             }
         }.padding()
     }
     
     var cardCountAdjusters: some View {
         HStack {
-            cardCountAdjuster(by: -1, symbol: "minus")
+            cardCountAdjusterButton(by: -1, symbol: "minus")
             Spacer()
-            cardCountAdjuster(by: 1, symbol: "plus")
+            cardCountAdjusterButton(by: 1, symbol: "plus")
         }.font(.largeTitle)
     }
     
-    func cardCountAdjuster(by offset: Int, symbol: String) -> some View {
+    func cardCountAdjusterButton(by offset: Int, symbol: String) -> some View {
         Button(action: {
             cardCount += offset
             print("cardCount changed", cardCount)
@@ -74,5 +75,5 @@ struct CardView: View {
 
 
 #Preview {
-    ContentView()
+    EmojiMemoryGameView()
 }
