@@ -11,13 +11,15 @@ import SwiftData
 struct EmojiMemoryGameView: View {
     @ObservedObject var viewModel: EmojiMemoryGame
     
+    private let aspectRatio: CGFloat = 2/3
+    
     @State var cardCount: Int = 5
+    
+    
     var body: some View {
         VStack {
-            ScrollView {
                 cards
-                    .animation(.default, value: viewModel.cards)
-            }
+                .animation(.default, value: viewModel.cards)
             Button("Shuffle") {
                 viewModel.shuffle();
             }
@@ -27,20 +29,18 @@ struct EmojiMemoryGameView: View {
 
     }
     
-    var cards: some View {
-        LazyVGrid(columns: [GridItem(.adaptive(minimum: 85), spacing: 0)]) {
-            ForEach(viewModel.cards) { card in
-                CardView(card)
-                    .aspectRatio(2/3, contentMode: .fit)
-                    .padding(4)
-                    .onTapGesture {
-                        viewModel.choose(card)
-                    }
-            }
+    
+    private var cards: some View {
+        AspectVGrid(viewModel.cards, aspectRatio: aspectRatio) { card in
+            CardView(card)
+                .padding(4)
+                .onTapGesture {
+                    viewModel.choose(card)
+                }
         }
     }
     
-    var cardCountAdjusters: some View {
+    private var cardCountAdjusters: some View {
         HStack {
             cardCountAdjusterButton(by: -1, symbol: "minus")
             Spacer()
@@ -48,7 +48,7 @@ struct EmojiMemoryGameView: View {
         }.font(.largeTitle)
     }
     
-    func cardCountAdjusterButton(by offset: Int, symbol: String) -> some View {
+    private func cardCountAdjusterButton(by offset: Int, symbol: String) -> some View {
         Button(action: {
             cardCount += offset
             print("cardCount changed", cardCount)
